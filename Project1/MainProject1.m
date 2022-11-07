@@ -1,0 +1,254 @@
+% This will be the main file where things will be run
+% First we have to show that the function will always have a zero
+% Let's take a simple case where M (The number of different binding molecules) = 1, k1 (The equilibrium constant) = 1,
+% n1 (The total concentrations of the different binding molecules) = 10 and E (The tal concentration of ligands) = 1
+% When we graph this function using the values above we will get...
+
+syms x f(x);
+
+response = input("Do you want to skip the introductory part? (0 for no, 1 for yes):  ");
+
+if response == 0
+
+    % This is simple case
+    disp 'Simple case function';
+    f(x) = x*(1 + (10/(1+x))) - 1
+    
+    % This will plot the function
+    fplot(f(x))
+    
+    % This will produce what the function evaluates to at x = 0
+    disp 'Function evaulated at x=0, should be negative'
+    f(0) % This will equal 0
+    
+    % This will produce what the function evaluates to at x = 5
+    disp 'Function evaluated at x=5 should be positve'
+    f(5) % This will equal 37/3
+    
+    % From the plot and the values given above we can see that this function
+    % will be negative when evaluated at x=0 and positive when the function is
+    % evaluated at x = 5. Thus by the intermediate value theorem we know of the
+    % existence of a positive root in this function.
+    
+    % Now to show that it is strictly increasing we will take the derivative
+    % and evaluate it.
+    
+    fderiv = diff(f);
+    disp 'This is the derivative of the simple case function'
+    disp(fderiv)
+    
+    % When the above code is run we see that the derivative of the function is
+    % 10/(x+1) - (10-x)/(x+1)^2 + 1. Its easy to see by inspection that this
+    % derivative will always produce a positive output for all x > 0, and thus
+    % the function is strictly increasing by definition of the derivative
+    
+    % Now that we have a test case lets expand it a little to show how it
+    % changes based on different values for n, k, M, and E.
+    
+    % Let's do the same thing with M = 3, n1 = 1, n2 = 2, n3 = 3, k1 and k2 =
+    % 1, k3 = 3 and E = 4
+    
+    % With this we get the equation is x(1 + 1/(1+x) + 2/(1+x) + 9/(1+3x)) - 4
+    
+    hold on
+    
+    disp 'This is a more complicated form of the function'
+    g(x) =  x + x/(1+x) + 2*x/(1+x)+ 9*x/(1+3*x) - 4
+    fplot(g(x))
+    disp 'New complicated function evaluated at 0, should be negative'
+    g(0)
+    disp 'New complicated function evaluated at 5, should be positive'
+    g(5)
+    
+    disp 'This is the derivative of the complicated function'
+    gderiv = diff(g);clc
+    disp(gderiv)
+    
+    hold off
+    
+    % Again, based on all of the things above this second example also has a
+    % negative output at x = 0 and a positive output at some larger value of x.
+    % The derivative outputted also shows that the function will be strictly
+    % increasing at x > 0.
+    
+    % Now that we have shown that there will exist a unique solution for this
+    % function independent of how many terms; it has it is time to try to solve
+    % this numerically through the use of root finding methods such as Newton's
+    % Method, Fixed Point Iteration and Bisection Method
+    
+    disp 'First lets use Newtons Method:';
+    
+    % Case 1 (simple case from above): M = 1, k1 = 1, n1 = 10, E = 1
+    
+    h(x) = x*(1 + (10/(1+x))) - 1;
+    initguess = 1.6;
+    
+    run("Hugo_NewtonsMethod.m")
+    
+    disp ' ';
+    
+    % From this we see that using this initial guess on this case we will get a
+    % negative root so we need to change the initial guess
+    
+    disp 'This gave us wrong root, try another initial value';
+    
+    initguess = 0;
+    
+    run("Hugo_NewtonsMethod.m")
+    
+    disp ' '
+    
+    % Changing the initial guess to 0 not only got us the correct root but also
+    % got us there in 4 iterations, this is quadratic convergence
+    
+    % Now it is time to try to use Bisection Method to approximate the root of
+    % this function
+    
+    disp 'Now lets use bisection:';
+    
+    run("Hugo_Bisection.m")
+    
+    disp ' ';
+    
+    % Bisection always follows linear convergence because of how it is
+    % formatted so there is no test needed to check for this
+    
+    % Finally lets do some Fixed Point Iteration
+    
+    % In order to use fixed point iteration we need to get the function in
+    % terms of x = something, so lets rewrite the function
+    % This is actually pretty easy because if we distribute the x out in the
+    % front of the parenthesized term then we will always get an x term that we
+    % can isolate by subtracting over the rest of the terms
+    
+    disp 'Rearranging the function to get in terms of x = something'
+    
+    h(x) = 1 - (10*x/(1+x))
+    initguess = 0;
+    
+    disp 'Using FPI:'
+    
+    run("Hugo_FixedPointIteration.m")
+    
+    disp ' ';
+    
+    % Because of the way that this fpi equation is created we will always get
+    % the negative root back no matter what initial guess we use.
+    % This is because no matter what value we start with we will eventually
+    % start to pass in positive values and once we do that the output will
+    % become negative and approach the negative root
+    
+    % Case 2 (complex case): M = 3, E = 9, k1 = 1, k2 = 2, k3 = 6, n1 = 2,
+    % n2 = 3, n3 = 1
+    
+    disp 'Now lets use all the methods again but for a much more complicated function'
+    
+    disp 'Function we are using for case 2:'
+    
+    h(x) = x + 2*x/(1+x) + 6*x/(1+2*x) + 6*x/(1+6*x) - 9
+    initguess = 1;
+    
+    disp 'Newtons Method:'
+    
+    run("Hugo_NewtonsMethod.m")
+    
+    disp ' '
+    
+    % This case also got us the proper root in 4 iterations, this is also
+    % quadratic convergence.
+    
+    % Now lets use bisection method just like before
+    
+    disp 'Bisection Method:'
+    
+    run("Hugo_Bisection.m")
+    
+    disp ' '
+    
+    % Again we have arrived to the correct root using the bisection method, but
+    % it is only in linear speed which is a disadvantage of the method itself
+    
+    % Finally we will use Fixed Point Iteration
+    
+    disp 'Rearranging the complicated function to use FPI'
+    
+    h(x) = 9 - 2*x/(1+x) - 6*x/(1+2*x) - 6*x/(1+6*x)
+    
+    disp 'Fixed Point Iteration:'
+    
+    run("Hugo_FixedPointIteration.m")
+    
+    disp ' '
+    
+    % This time fixed point iteration gave us the correct root, but it took 11
+    % iterations. This is probably a sign of linear convergence.
+    
+    % Now it is time to find some errors and conclude the definitive
+    % convergence speeds for all the different methods using the hard-coded
+    % examples from above
+
+end
+
+
+% Finally this last part of the code will allow for the user to make the
+% function anything they want by assigning their own M, E, and k_i and n_i
+% values
+
+j_user = 1;
+M = input('Enter your M upper bound value for the sum:   ');
+y(x) = 1;
+
+while j_user <= M
+    k_user = input('What is the value going to be for k_' + string(j_user) + ':   ');
+    n_user = input('What is the value going to be for n_' + string(j_user) + ':   ');
+    y(x) = y(x) + (k_user*n_user)/(1+k_user*x);
+    j_user = j_user +1;
+end
+
+E_user = input('What is the value for E:   ');
+
+h(x) = x*(y(x)) - E_user;
+
+disp ' '
+disp 'This is what the function you made looks like:  '
+h(x)
+
+disp ' '
+
+% Now it is time to run the three root finding methods that have been used
+% the entire time.
+
+% First Newton's Method
+
+initguess = input('What do you want your initial guess for Newtons Method to be:  ');
+
+disp 'Newtons method root for user made function: '
+
+run("Hugo_NewtonsMethod.m")
+
+disp ' '
+
+% Now Bisection Method
+
+disp 'Bisection Method for user made function: '
+
+run("Hugo_Bisection.m")
+
+disp ' '
+
+% And finally Fixed Point Iteration
+
+h(x) = E_user - (h(x)+E_user-x);
+
+initguess = input('What do you want your initial guess for Fixed Point Iteration to be:  ');
+
+disp 'Fixed Point Iteration for user made function: '
+
+run("Hugo_FixedPointIteration.m")
+
+disp ' '
+
+
+
+
+
